@@ -16,7 +16,6 @@ QUEUE_FILE = "queue.json"
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
-queue = load_queue()
 paused = False
 DELAY_SECONDS = 3 * 60 * 60  # 3 часа по умолчанию
 PUBLISH_START_HOUR = 6   # с 06:00
@@ -33,9 +32,14 @@ def load_queue():
         queue = []
         print("📂 Очередь пуста")
 
+return queue
+
 def save_queue():
     with open(QUEUE_FILE, "w", encoding="utf-8") as f:
         json.dump(queue, f, ensure_ascii=False, indent=2)
+
+queue = load_queue()
+print(f"📂 Очередь загружена: {len(queue)}")
 
 def is_publish_time():
     current_hour = time.localtime().tm_hour
@@ -188,5 +192,6 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
