@@ -32,7 +32,7 @@ def load_queue():
         queue = []
         print("📂 Очередь пуста")
 
-return queue
+    return queue
 
 def save_queue():
     with open(QUEUE_FILE, "w", encoding="utf-8") as f:
@@ -192,6 +192,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
