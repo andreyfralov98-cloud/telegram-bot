@@ -1,6 +1,7 @@
 import time
 import asyncio
 import json
+import os
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -15,7 +16,8 @@ QUEUE_FILE = "queue.json"
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
-queue = []
+queue = load_queue()
+print(f"Очередь загружена: {len(queue)}")
 paused = False
 DELAY_SECONDS = 3 * 60 * 60  # 3 часа по умолчанию
 PUBLISH_START_HOUR = 6   # с 06:00
@@ -187,3 +189,4 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
