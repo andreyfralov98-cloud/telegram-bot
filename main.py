@@ -188,12 +188,14 @@ async def process_menu(callback: types.CallbackQuery):
 
 async def on_startup(dp):
     asyncio.create_task(publisher())
+    await bot.delete_webhook(drop_pending_updates=True)
 
 # === ЗАПУСК ===
 if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
