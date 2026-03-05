@@ -17,7 +17,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 paused = False
-DELAY_SECONDS = 60
+DELAY_SECONDS = 10800
 PUBLISH_START_HOUR = 6   # с 06:00
 PUBLISH_END_HOUR = 24    # до 00:00
 
@@ -41,8 +41,11 @@ def save_queue():
 queue = load_queue()
 print(f"📂 Очередь загружена: {len(queue)}")
 
+from datetime import datetime, timedelta
+
 def is_publish_time():
-    return True
+    now = datetime.utcnow() + timedelta(hours=5)
+    return 6 <= now.hour < 24
 
 # === МЕНЮ ===
 def control_menu():
@@ -191,6 +194,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
