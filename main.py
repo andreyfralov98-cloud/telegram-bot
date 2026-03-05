@@ -42,8 +42,7 @@ queue = load_queue()
 print(f"📂 Очередь загружена: {len(queue)}")
 
 def is_publish_time():
-    current_hour = time.localtime().tm_hour
-    return PUBLISH_START_HOUR <= current_hour < PUBLISH_END_HOUR
+    return True
 
 # === МЕНЮ ===
 def control_menu():
@@ -192,6 +191,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
