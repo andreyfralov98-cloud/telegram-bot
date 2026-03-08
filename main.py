@@ -17,7 +17,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 paused = False
-DELAY_SECONDS = 60
+DELAY_SECONDS = 10800
 PUBLISH_START_HOUR = 6   # с 06:00
 PUBLISH_END_HOUR = 24    # до 00:00
 
@@ -195,6 +195,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
