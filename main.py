@@ -66,7 +66,7 @@ def control_menu():
 async def grab_post(message: types.Message):
     if queue:
     publish_at = queue[-1]["publish_at"] + DELAY_SECONDS
-    else:
+else:
     publish_at = time.time() + DELAY_SECONDS
 
     if message.text:
@@ -198,6 +198,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
