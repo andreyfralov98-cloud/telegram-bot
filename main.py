@@ -97,6 +97,17 @@ async def grab_post(message: types.Message):
         print("📸 Альбом добавлен")
 
         del media_groups[message.media_group_id]
+        
+    elif message.photo:
+
+        queue.append({
+            "type": "photo",
+            "file_id": message.photo[-1].file_id,
+            "caption": message.caption or "",
+            "publish_at": publish_at
+        })
+
+        print("📥 Фото добавлено")
 
     elif message.video:
         queue.append({
@@ -222,6 +233,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
