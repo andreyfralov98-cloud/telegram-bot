@@ -4,6 +4,7 @@ import json
 import os
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from collections import defaultdict
 
 # === НАСТРОЙКИ ===
 TOKEN = "8559767612:AAEOvbHr-an5N8XNhEPsFTcrnLWV-KvuWkM"
@@ -40,6 +41,7 @@ def save_queue():
 
 queue = load_queue()
 print(f"📂 Очередь загружена: {len(queue)}")
+media_groups = defaultdict(list)
 
 from datetime import datetime, timedelta
 
@@ -77,14 +79,24 @@ async def grab_post(message: types.Message):
         })
         print("📥 Текст добавлен")
 
-    elif message.photo:
+    elif message.media_group_id:
+
+        media_groups[message.media_group_id].append(message.photo[-1].file_id)
+
+        caption = message.caption if message.caption else ""
+
+    if len(media_groups[message.media_group_id]) >= 2:
+        
         queue.append({
-            "type": "photo",
-            "file_id": message.photo[-1].file_id,
-            "caption": message.caption or "",
+            "type": "album",
+            "files": media_groups[message.media_group_id],
+            "caption": caption,
             "publish_at": publish_at
         })
-        print("📥 Фото добавлено")
+
+        print("📸 Альбом добавлен")
+
+        del media_groups[message.media_group_id]
 
     elif message.video:
         queue.append({
@@ -140,6 +152,18 @@ async def publisher():
                         post["file_id"],
                         caption=post.get("caption")
                     )
+                elif post["type"] == "album":
+
+                    media = []
+
+                for i, file_id in enumerate(post["files"]):
+
+                if i == 0:
+                    media.append(types.InputMediaPhoto(file_id, caption=post["caption"]))
+                else:
+                    media.append(types.InputMediaPhoto(file_id))
+
+    await bot.send_media_group(DEST_CHANNEL_ID, media)
 
                 print(f"✅ Опубликовано ({post['type']})")
 
@@ -198,6 +222,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
