@@ -156,14 +156,14 @@ async def publisher():
 
                     media = []
 
-                for i, file_id in enumerate(post["files"]):
+                    for i, file_id in enumerate(post["files"]):
 
-                if i == 0:
-                    media.append(types.InputMediaPhoto(file_id, caption=post["caption"]))
-                else:
-                    media.append(types.InputMediaPhoto(file_id))
+                        if i == 0:
+                            media.append(types.InputMediaPhoto(file_id, caption=post["caption"]))
+                        else:
+                            media.append(types.InputMediaPhoto(file_id))
 
-    await bot.send_media_group(DEST_CHANNEL_ID, media)
+                    await bot.send_media_group(DEST_CHANNEL_ID, media)
 
                 print(f"✅ Опубликовано ({post['type']})")
 
@@ -222,6 +222,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
