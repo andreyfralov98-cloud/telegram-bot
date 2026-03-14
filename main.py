@@ -123,21 +123,21 @@ media_captions = {}
 @dp.channel_post_handler(chat_id=SOURCE_CHANNEL_ID, content_types=types.ContentType.ANY)
 async def grab_post(message: types.Message):
 
+    n = now_local()
+
     if queue:
         publish_at = queue[-1]["publish_at"] + DELAY_SECONDS
     else:
-        n = now_local()
+        if n.hour < PUBLISH_START_HOUR:
+            target = n.replace(hour=6, minute=0, second=0, microsecond=0)
+            publish_at = target.timestamp()
 
-    if n.hour < PUBLISH_START_HOUR:
-        target = n.replace(hour=6, minute=0, second=0, microsecond=0)
-        publish_at = target.timestamp()
+        elif n.hour >= PUBLISH_END_HOUR:
+            publish_at = next_day_6am_ts()
 
-    elif n.hour >= PUBLISH_END_HOUR:
-        publish_at = next_day_6am_ts()
+        else:
+            publish_at = time.time() + DELAY_SECONDS
 
-    else:
-        publish_at = time.time() + DELAY_SECONDS
-    
     # --- ТЕКСТ ---
     if message.text:
         queue.append({
@@ -311,6 +311,7 @@ async def on_startup(dp):
 if __name__ == "__main__":
     print("🚀 Бот запускается")
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
