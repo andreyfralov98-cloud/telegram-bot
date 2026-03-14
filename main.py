@@ -136,6 +136,8 @@ async def grab_post(message: types.Message):
             "publish_at": publish_at
         })
 
+        save_queue()
+
         print("📸 Альбом добавлен")
 
         del media_groups[message.media_group_id]
@@ -149,6 +151,8 @@ async def grab_post(message: types.Message):
             "publish_at": publish_at
         })
 
+        save_queue()
+
         print("📥 Фото добавлено")
 
     elif message.video:
@@ -158,6 +162,9 @@ async def grab_post(message: types.Message):
             "caption": message.caption or "",
             "publish_at": publish_at
         })
+
+        save_queue()
+        
         print("📥 Видео добавлено")
 
     save_queue()
@@ -276,6 +283,7 @@ async def on_startup(dp):
 if __name__ == "__main__":
     print("🚀 Бот запускается")
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
