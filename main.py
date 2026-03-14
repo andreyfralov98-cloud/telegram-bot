@@ -2,6 +2,8 @@ import time
 import asyncio
 import json
 import os
+import time
+from datetime import datetime, timedelta
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from collections import defaultdict
@@ -36,8 +38,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 paused = False
-PUBLISH_HOURS = [6, 9, 12, 15, 18, 21]
-DELAY_SECONDS = 10800
+DELAY_SECONDS = 7200
 PUBLISH_START_HOUR = 6   # с 06:00
 PUBLISH_END_HOUR = 24    # до 00:00
 
@@ -104,6 +105,16 @@ def control_menu():
     )
     return kb
 
+def next_day_6am_ts():
+    now = datetime.utcnow() + timedelta(hours=5)
+    tomorrow = now + timedelta(days=1)
+    target = tomorrow.replace(hour=6, minute=0, second=0, microsecond=0)
+    return target.timestamp()
+
+def now_local():
+    return datetime.utcnow() + timedelta(hours=5)
+
+
 # === ЗАХВАТ ПОСТОВ ===
 from collections import defaultdict
 media_groups = defaultdict(list)
@@ -112,8 +123,21 @@ media_captions = {}
 @dp.channel_post_handler(chat_id=SOURCE_CHANNEL_ID, content_types=types.ContentType.ANY)
 async def grab_post(message: types.Message):
 
-    publish_at = get_next_publish_time()
+    if queue:
+        publish_at = queue[-1]["publish_at"] + DELAY_SECONDS
+    else:
+        n = now_local()
 
+    if n.hour < PUBLISH_START_HOUR:
+        target = n.replace(hour=6, minute=0, second=0, microsecond=0)
+        publish_at = target.timestamp()
+
+    elif n.hour >= PUBLISH_END_HOUR:
+        publish_at = next_day_6am_ts()
+
+    else:
+        publish_at = time.time()
+    
     # --- ТЕКСТ ---
     if message.text:
         queue.append({
@@ -287,6 +311,7 @@ async def on_startup(dp):
 if __name__ == "__main__":
     print("🚀 Бот запускается")
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
