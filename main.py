@@ -14,6 +14,24 @@ ADMIN_ID = 7190057517
 
 QUEUE_FILE = "queue.json"
 
+queue = []
+
+def save_queue():
+    with open(QUEUE_FILE, "w", encoding="utf-8") as f:
+        json.dump(queue, f)
+
+
+def load_queue():
+    global queue
+
+    if os.path.exists(QUEUE_FILE):
+
+        with open(QUEUE_FILE, "r", encoding="utf-8") as f:
+            queue = json.load(f)
+
+    else:
+        queue = []
+        
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
@@ -100,6 +118,9 @@ async def grab_post(message: types.Message):
             "text": message.text,
             "publish_at": publish_at
         })
+
+        save_queue()
+        
         print("📥 Текст добавлен")
 
     elif message.media_group_id:
@@ -248,14 +269,16 @@ async def process_menu(callback: types.CallbackQuery):
     await callback.answer()
 
 async def on_startup(dp):
+    load_queue()
+    print(f"📂 Очередь загружена: {len(queue)}")
     asyncio.create_task(publisher())
     await bot.delete_webhook(drop_pending_updates=True)
 
 # === ЗАПУСК ===
 if __name__ == "__main__":
     print("🚀 Бот запускается")
-    load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
