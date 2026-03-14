@@ -117,8 +117,7 @@ async def grab_post(message: types.Message):
             "publish_at": publish_at
         })
 
-        save_queue()
-        
+        save_queue()    
         print("📥 Текст добавлен")
 
     elif message.media_group_id:
@@ -283,6 +282,7 @@ async def on_startup(dp):
 if __name__ == "__main__":
     print("🚀 Бот запускается")
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
