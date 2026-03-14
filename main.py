@@ -18,6 +18,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 paused = False
+PUBLISH_HOURS = [6, 9, 12, 15, 18, 21]
 DELAY_SECONDS = 10800
 PUBLISH_START_HOUR = 6   # с 06:00
 PUBLISH_END_HOUR = 24    # до 00:00
@@ -49,6 +50,28 @@ def is_publish_time():
     now = datetime.utcnow() + timedelta(hours=5)
     return 6 <= now.hour < 24
 
+def is_publish_time():
+    now = datetime.utcnow() + timedelta(hours=5)
+    return 6 <= now.hour < 24
+
+
+from datetime import datetime, timedelta
+
+def get_next_publish_time():
+
+    now = datetime.utcnow() + timedelta(hours=5)
+
+    for hour in PUBLISH_HOURS:
+        publish_time = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+
+        if publish_time > now:
+            return publish_time.timestamp()
+
+    next_day = now + timedelta(days=1)
+    publish_time = next_day.replace(hour=PUBLISH_HOURS[0], minute=0, second=0, microsecond=0)
+
+    return publish_time.timestamp()
+
 # === МЕНЮ ===
 def control_menu():
     kb = InlineKeyboardMarkup(row_width=2)
@@ -69,7 +92,7 @@ async def grab_post(message: types.Message):
     if queue:
         publish_at = queue[-1]["publish_at"] + DELAY_SECONDS
     else:
-        publish_at = time.time() + DELAY_SECONDS
+        publish_at = get_next_publish_time()
 
     if message.text:
         queue.append({
@@ -233,6 +256,7 @@ if __name__ == "__main__":
     print("🚀 Бот запускается")
     load_queue()
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
