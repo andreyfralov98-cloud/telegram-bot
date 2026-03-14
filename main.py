@@ -105,11 +105,16 @@ def control_menu():
     return kb
 
 # === ЗАХВАТ ПОСТОВ ===
+from collections import defaultdict
+media_groups = defaultdict(list)
+media_captions = {}
+
 @dp.channel_post_handler(chat_id=SOURCE_CHANNEL_ID, content_types=types.ContentType.ANY)
 async def grab_post(message: types.Message):
-    
-        publish_at = get_next_publish_time()
 
+    publish_at = get_next_publish_time()
+
+    # --- ТЕКСТ ---
     if message.text:
         queue.append({
             "type": "text",
@@ -117,7 +122,7 @@ async def grab_post(message: types.Message):
             "publish_at": publish_at
         })
 
-        save_queue()    
+        save_queue()
         print("📥 Текст добавлен")
 
     elif message.media_group_id:
@@ -282,6 +287,7 @@ async def on_startup(dp):
 if __name__ == "__main__":
     print("🚀 Бот запускается")
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
