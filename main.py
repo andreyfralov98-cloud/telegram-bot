@@ -136,7 +136,7 @@ async def grab_post(message: types.Message):
         publish_at = next_day_6am_ts()
 
     else:
-        publish_at = time.time()
+        publish_at = time.time() + DELAY_SECONDS
     
     # --- ТЕКСТ ---
     if message.text:
@@ -311,6 +311,7 @@ async def on_startup(dp):
 if __name__ == "__main__":
     print("🚀 Бот запускается")
     executor.start_polling(dp, on_startup=on_startup)
+
 
 
 
