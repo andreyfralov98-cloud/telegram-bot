@@ -125,24 +125,24 @@ async def grab_post(message: types.Message):
 
     n = now_local()
 
-if queue:
-    last_time = queue[-1]["publish_at"]
+    if queue:
+        last_time = queue[-1]["publish_at"]
 
-    if last_time < time.time():
-        publish_at = time.time() + DELAY_SECONDS
-    else:
-        publish_at = last_time + DELAY_SECONDS
-
-else:
-    if n.hour < 6:
-        target = n.replace(hour=6, minute=0, second=0, microsecond=0)
-        publish_at = target.timestamp()
-
-    elif n.hour >= 23:
-        publish_at = next_day_6am_ts()
+        if last_time < time.time():
+            publish_at = time.time() + DELAY_SECONDS
+        else:
+            publish_at = last_time + DELAY_SECONDS
 
     else:
-        publish_at = time.time() + DELAY_SECONDS
+        if n.hour < 6:
+            target = n.replace(hour=6, minute=0, second=0, microsecond=0)
+            publish_at = target.timestamp()
+
+        elif n.hour >= 23:
+            publish_at = next_day_6am_ts()
+
+        else:
+            publish_at = time.time() + DELAY_SECONDS
         
     # --- ТЕКСТ ---
     if message.text:
