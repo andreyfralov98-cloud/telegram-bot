@@ -138,7 +138,7 @@ else:
         target = n.replace(hour=6, minute=0, second=0, microsecond=0)
         publish_at = target.timestamp()
 
-    elif n.hour >= 24:
+    elif n.hour >= 23:
         publish_at = next_day_6am_ts()
 
     else:
